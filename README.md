@@ -81,5 +81,5 @@ For more detailed usage of PatchTable, see the `test_match` function in `patchta
 GUI (Windows)
 -------------
 
-The Windows GUI for image editing and stitching is in patchtable_apps/ImgCollection/Patch.
+The Windows GUI for image editing and stitching is in `patchtable_apps/ImgCollection/Patch`.
 
