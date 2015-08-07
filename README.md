@@ -76,7 +76,7 @@ Here is a simple code fragment of how PatchTable could be used in your own C++ p
 
     save_color_image(ann, out_filename);
 
-For more detailed usage of PatchTable, see the test_match function in patchtable_main.cpp.
+For more detailed usage of PatchTable, see the `test_match` function in `patchtable_main.cpp`.
 
 GUI (Windows)
 -------------
