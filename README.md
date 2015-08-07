@@ -7,7 +7,7 @@ Currently this code runs on Mac. It also can build on Windows. We hope to releas
 License
 -------
 
-The code can be used for non-commercial research purposes. For a commerical license, contact the authors.
+The code can be used for non-commercial research purposes. For a commercial license, contact the authors.
 
 Citations
 ---------
