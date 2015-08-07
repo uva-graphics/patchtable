@@ -1,0 +1,11 @@
+total_time: 9.547254, query_time: 2.421066, mean_dist: 0.124992, mean_dist_recomputed: 0.124992
+total_time: 11.658378, query_time: 1.474994, mean_dist: 0.126110, mean_dist_recomputed: 0.126110
+total_time: 11.145365, query_time: 1.121039, mean_dist: 0.127488, mean_dist_recomputed: 0.127488
+total_time: 9.334650, query_time: 0.790362, mean_dist: 0.130757, mean_dist_recomputed: 0.130757
+total_time: 7.463013, query_time: 0.396828, mean_dist: 0.134008, mean_dist_recomputed: 0.134008
+total_time: 9.618814, query_time: 0.268755, mean_dist: 0.137770, mean_dist_recomputed: 0.137770
+total_time: 8.735598, query_time: 0.174836, mean_dist: 0.147777, mean_dist_recomputed: 0.147777
+total_time: 3.110384, query_time: 0.102098, mean_dist: 0.161892, mean_dist_recomputed: 0.161892
+total_time: 9.216212, query_time: 0.067563, mean_dist: 0.181062, mean_dist_recomputed: 0.181062
+total_time: 9.689850, query_time: 0.044987, mean_dist: 0.220285, mean_dist_recomputed: 0.220285
+

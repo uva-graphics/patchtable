@@ -1,0 +1,147 @@
+bike.mp4:
+http://vimeo.com/29121903
+Gusts Ošmucnieks, Dirty town
+
+Shell commands to process bike.mp4:
+
+$ ffmpeg -i bike.mp4 -vf scale=640:-1 in/bike%05d.png                                             # Decode input
+$ cd ..
+$ ./patchtable analogy a.png ap.png video/in/bike%05d.png video/out/bike%05d.png                  # Make analogy
+$ cd video
+$ ffmpeg -i out/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 out.mp4  # Encode output
+
+For bike1024.mp4:
+
+$ ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_new3.mp4
+
+Various parameter settings:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo dualtv -of_downsample 1.0 -coherence_temporal 0
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_dualtv_no_temporal.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_no_temporal.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0 -coherence_spatial 200
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_coherence_200.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0 -upweight_coherence 2
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_coherence_80_upweight_coherence.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0 -coherence_spatial 80 -upweight_coherence 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_coherence_80_upweight_coherence_1.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0 -coherence_spatial 200 -upweight_coherence 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_coherence_200_upweight_coherence_1.mp4
+
+-----
+
+After bug fix:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_bug_fix_coherence_80.mp4
+
+-----
+
+After second bug fix:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0 -coherence_spatial 80 -upweight_coherence 1 -update_every 2
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_every_2.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -update_every 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_coherence_temporal_1.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_new_code.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_out_1024_farneback_new_code_150.mp4
+
+-----
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+-----
+
+Engraving:
+
+./patchtable analogy image_analogies/engraving_nast_large/a.png image_analogies/engraving_nast_large/ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_engraving_1024_farneback_new_code_150.mp4
+
+Pastel:
+
+./patchtable analogy image_analogies/pastel/a.png image_analogies/pastel/ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150 -analogy_verbose 1
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_engraving_1024_farneback_new_code_150.mp4
+
+Accelerations:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/oil_out1024_speed9/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150 -speed 9; ./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/oil_out1024_speed9_down0_5/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 0.5 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150 -speed 9
+
+Two more styles:
+
+./patchtable analogy image_analogies/penandink/a.png image_analogies/penandink/ap.png video/in1024/bike%05d.png video/penandink/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+./patchtable analogy image_analogies/watercolor2/a.png image_analogies/watercolor2/ap.png video/in1024/bike%05d.png video/watercolor2/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+Comparison with Previous Work:
+
+./patchtable analogy image_analogies/watercolor2/a.png image_analogies/watercolor2/ap.png video/in_pingpong/frame%05d.png video/pingpong_watercolor2/frame%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+ffmpeg -i pingpong_watercolor2/frame%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 pingpong_watercolor2.mp4
+
+Accurate parameters:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out_oil_accurate/bike%05d.png -threads 8  -ndims 20 -grid_ndims 10 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 20 -upweight_coherence 1 -min_size 150
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out_oil_accurate2/bike%05d.png -threads 8  -ndims 20 -grid_ndims 10 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0.5 -coherence_spatial 20 -upweight_coherence 1 -min_size 150
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out_oil_accurate3/bike%05d.png -threads 8  -ndims 20 -grid_ndims 10 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 0.25 -coherence_spatial 20 -upweight_coherence 1 -min_size 150
+
+————————————————
+Shot detection:
+————————————————
+
+Oil:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out1024/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150 -analogy_verbose 1 -shot_detect 0.05
+
+ffmpeg -i out1024/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_oil_shot_detect.mp4
+
+Engraving:
+
+./patchtable analogy image_analogies/engraving_nast_large/a.png image_analogies/engraving_nast_large/ap.png video/in1024/bike%05d.png video/out_engraving/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150
+
+ffmpeg -i out_engraving/bike%05d.png -c:v libx264 -profile:v high -crf 23 -pix_fmt yuv420p -r 24 bike_engraving_shot_detect.mp4
+
+Fast:
+
+./patchtable analogy a.png ap.png video/in1024/bike%05d.png video/out_oil_fast/bike%05d.png -threads 8 -recalc_dist_temporal 1 -optical_flow 1 -of_algo farneback -of_downsample 1.0 -coherence_temporal 1 -coherence_spatial 80 -upweight_coherence 1 -min_size 150 -analogy_verbose 0 -shot_detect 0.05 -correction_iters 1 -speed 7 -limit 100 -of_iterations 1

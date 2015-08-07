@@ -1,0 +1,23 @@
+Pyramid iteration 1:
+Building patchtable costs 65ms.
+The rest time is 103ms.
+
+Pyramid iteration 2:
+Building patchtable costs 139ms.
+The rest time is 149ms.
+
+Pyramid iteration 3:
+Building patchtable costs 477ms.
+The rest time is 289ms.
+
+Pyramid iteration 4:
+Building patchtable costs 2081ms.
+The rest time is 860ms.
+
+Pyramid iteration 5:
+Building patchtable costs 11978ms.
+The rest time is 3257ms.
+
+Pyramid iteration 6:
+Building patchtable costs 61385ms.
+The rest time is 10056ms.

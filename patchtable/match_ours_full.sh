@@ -1,0 +1,10 @@
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 0 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 1 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 2 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 3 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 4 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 5 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 6 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 7 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 8 -verbose 0
+./patchtable match vidpair0/a.png vidpair0/b.png out.pfm -speed 9 -verbose 0
