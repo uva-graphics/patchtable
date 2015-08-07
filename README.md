@@ -1,6 +1,6 @@
 # PatchTable: Efficient Patch Queries for Large Datasets and Applications
 
-This is the source code for the project [PatchTable|http://www.connellybarnes.com/work/project_pages/patchtable/], presented at ACM SIGGRAPH 2015. PatchTable speeds up patch queries by making a precomputed index data structure. The precomputation is assumed to be an offline process that can take seconds to minutes.
+This is the source code for the project [PatchTable](http://www.connellybarnes.com/work/project_pages/patchtable/), presented at ACM SIGGRAPH 2015. PatchTable speeds up patch queries by making a precomputed index data structure. The precomputation is assumed to be an offline process that can take seconds to minutes.
 
 Currently this code runs on Mac. It also can build on Windows. We hope to release Windows project files in a few days.
 
@@ -8,6 +8,13 @@ License
 -------
 
 The code can be used for non-commercial research purposes. For a commerical license, contact the authors.
+
+Citations
+---------
+
+If you use this in an academic setting, please cite our paper [BibTeX](http://www.connellybarnes.com/work/bib/2015_patchtable.bib):
+
+ * PatchTable: Efficient Patch Queries for Large Datasets and Applications. Connelly Barnes, Fang-Lue Zhang, Liming Lou, Xian Wu, Shi-Min Hu. ACM Transactions on Graphics (Proc. SIGGRAPH) 2015.
 
 Install Dependencies
 --------------------
