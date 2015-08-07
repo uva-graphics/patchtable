@@ -8,7 +8,9 @@
 using std::vector;
 using std::string;
 
-#define TABLE_RS_TABLE      0
+#define TABLE_PRODUCT_QUANTIZE  0           /* Enable product quantization */
+#define TABLE_RS_TABLE          0
+#define TABLE_CLUSTER_KMEANS    0           /* Use k-means clustering as a coarse level and tables inside fine level */
 
 #define gck_ymin(a) (p->patch_w-1)
 #define gck_xmin(a) (p->patch_w-1)
@@ -36,6 +38,28 @@ class PatchTableParams { public:
     bool do_table_lookup;
     bool init_random;
     double treecann_eps;
+    int allowed_index;                        // When allowed_patches(y, x) == allowed_index, a patch is allowed
+    
+#if TABLE_CLUSTER_KMEANS
+    bool cluster_kmeans;
+    int cluster_count;
+    double cluster_limit;
+#endif
+
+#if TABLE_PRODUCT_QUANTIZE
+    bool product_quantize;
+    bool product_quantize_log;
+    int product_quantize_dims;
+    int product_quantize_mapn;
+    int product_quantize_knn;
+    bool product_quantize_dt_all;
+#endif
+
+#if (TABLE_CLUSTER_KMEANS||TABLE_PRODUCT_QUANTIZE)
+    int kmeans_attempts;
+    int kmeans_max_iters;
+    double kmeans_eps;
+#endif
     
     int ndims;
     int nchroma;

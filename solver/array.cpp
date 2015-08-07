@@ -1,4 +1,3 @@
-
 #include "array.h"
 
 //bool array_debug = false;

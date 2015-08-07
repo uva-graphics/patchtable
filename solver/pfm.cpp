@@ -1,6 +1,5 @@
 
 /* Read/write 1 and 3 channel PFM files, public domain Connelly Barnes 2007. */
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

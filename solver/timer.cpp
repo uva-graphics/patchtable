@@ -1,4 +1,4 @@
-#include "array.h"
+//#include "array.h"
 
 #if VISUAL_STUDIO_WORKAROUND
 
@@ -9,7 +9,8 @@ LARGE_INTEGER wall_time_rate, wall_time_start;
 double wall_time() {
     if (!wall_time_initialized) {
         wall_time_initialized = true;
-        ASSERT2(QueryPerformanceFrequency(&wall_time_rate), "timer did not initialize");
+		QueryPerformanceFrequency(&wall_time_rate);
+        //ASSERT2(QueryPerformanceFrequency(&wall_time_rate), "timer did not initialize");
         QueryPerformanceCounter(&wall_time_start);
     }
     LARGE_INTEGER t;

@@ -8,6 +8,7 @@
 #include "analogy.h"
 #include "patchtable.h"
 
+
 #define ANALOGY_DEFAULT_PATCH_W      8
 #define ANALOGY_MAX_FLOW_DIST        0          /* Support max_flow_dist parameter */
 

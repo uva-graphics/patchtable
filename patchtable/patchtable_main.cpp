@@ -35,7 +35,6 @@
      - Follow on paper: Can consider irregular grid to be a nonlinear distortion applied to each dimension independently.
        Could also apply to m=2 or more dimensions simultaneously a nonlinear distortion, via an m-dimensional lookup table.
 */
-
 #include "patchtable.h"
 #include "analogy.h"
 

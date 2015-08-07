@@ -1,8 +1,10 @@
 
+#define VISUAL_STUDIO_WORKAROUND 1
+
 #include "util.h"
 #include <algorithm>
 #include "array.h"
-#define VISUAL_STUDIO_WORKAROUND 1
+
 
 #include "params.h"
 

@@ -50,6 +50,7 @@ void PatchTableParams::set_defaults() {
     do_prop = true;
     prop_y_step = 1;
     do_rs = true;
+    allowed_index = 1;
     spatial = 0;
     prob_rs = 1.0;
     do_calc_dist = true;
@@ -100,6 +101,28 @@ void PatchTableParams::set_defaults() {
     sanitize_input = true;
     do_table_lookup = true;
     init_random = false;
+
+#if TABLE_CLUSTER_KMEANS
+    cluster_kmeans = false;
+    cluster_count = 1024;
+    cluster_limit = limit;
+#endif
+
+#if TABLE_PRODUCT_QUANTIZE
+    product_quantize = false;
+    product_quantize_log = false;
+    product_quantize_dims = 2;
+    product_quantize_mapn = 128;
+    product_quantize_knn = 4;
+    product_quantize_dt_all = false;
+#endif
+
+#if (TABLE_CLUSTER_KMEANS||TABLE_PRODUCT_QUANTIZE)
+    kmeans_attempts = 1;
+    kmeans_max_iters = 10;
+    kmeans_eps = 1.0;
+#endif
+    
 #if TABLE_ENABLE_ANN
     ann = false;
     ann_agrid = 4;
@@ -211,6 +234,12 @@ void PatchTableParams::set_from_switches(int argc, const char **argv) {
     if (switches.count("-ann_eps"))  { ann_eps = atof(switches["-ann_eps"].c_str()); }
 #endif
 
+#if TABLE_CLUSTER_KMEANS
+    if (switches.count("-cluster_kmeans"))  { cluster_kmeans = bool(atoi(switches["-cluster_kmeans"].c_str())); }
+    if (switches.count("-cluster_count"))  { cluster_count = atoi(switches["-cluster_count"].c_str()); }
+    if (switches.count("-cluster_limit")) { cluster_limit = int(1000*1000*atof(switches["-cluster_limit"].c_str())); }
+#endif
+
     if (switches.count("-dt_knn"))  { dt_knn = atoi(switches["-dt_knn"].c_str()); }
 
     if (switches.count("-prop_iters"))  { prop_iters = atoi(switches["-prop_iters"].c_str()); }
@@ -229,6 +258,7 @@ void PatchTableParams::set_from_switches(int argc, const char **argv) {
         else if (mode == string("kdtree")) { dt_algo = DT_ALGO_KDTREE; }
         else if (mode == string("downsample")) { dt_algo = DT_ALGO_DOWNSAMPLE; }
         else if (mode == string("hybrid")) { dt_algo = DT_ALGO_HYBRID; }
+		else if (mode == string("euclidean")) { dt_algo = DT_ALGO_EUCLIDEAN; }
         else { fprintf(stderr, "invalid dt_algo\n"); exit(1); }
     }
 
@@ -288,12 +318,29 @@ void PatchTableParams::set_from_switches(int argc, const char **argv) {
     if (switches.count("-save_kcoherence"))  { save_kcoherence = bool(atoi(switches["-save_kcoherence"].c_str())); }
     if (switches.count("-triangle_factor"))  { triangle_factor = atof(switches["-triangle_factor"].c_str()); }
 
+    if (switches.count("-init_random"))  { init_random = bool(atoi(switches["-init_random"].c_str())); }
+
     if (switches.count("-pm_iters"))  { pm_iters = atoi(switches["-pm_iters"].c_str()); }
     if (switches.count("-pm_enrich"))  { pm_enrich = bool(atoi(switches["-pm_enrich"].c_str())); }
 
     if (switches.count("-sanitize_input"))  { sanitize_input = bool(atoi(switches["-sanitize_input"].c_str())); }
     if (switches.count("-do_table_lookup"))  { do_table_lookup = bool(atoi(switches["-do_table_lookup"].c_str())); }
 
+#if TABLE_PRODUCT_QUANTIZE
+    if (switches.count("-product_quantize"))  { product_quantize = bool(atoi(switches["-product_quantize"].c_str())); }
+    if (switches.count("-product_quantize_log"))  { product_quantize_log = bool(atoi(switches["-product_quantize_log"].c_str())); }
+    if (switches.count("-product_quantize_dt_all"))  { product_quantize_dt_all = bool(atoi(switches["-product_quantize_dt_all"].c_str())); }
+    if (switches.count("-product_quantize_dims"))  { product_quantize_dims = atoi(switches["-product_quantize_dims"].c_str()); }
+    if (switches.count("-product_quantize_mapn"))  { product_quantize_mapn = atoi(switches["-product_quantize_mapn"].c_str()); }
+    if (switches.count("-product_quantize_knn"))  { product_quantize_knn = atoi(switches["-product_quantize_knn"].c_str()); }
+#endif
+
+#if (TABLE_CLUSTER_KMEANS||TABLE_PRODUCT_QUANTIZE)
+    if (switches.count("-kmeans_attempts"))  { kmeans_attempts = atoi(switches["-kmeans_attempts"].c_str()); }
+    if (switches.count("-kmeans_max_iters"))  { kmeans_max_iters = atoi(switches["-kmeans_max_iters"].c_str()); }
+    if (switches.count("-kmeans_eps"))  { kmeans_eps = atof(switches["-kmeans_eps"].c_str()); }
+#endif
+    
     if (switches.count("-grid_ndims"))  { grid_ndims = atoi(switches["-grid_ndims"].c_str()); }
 
     if (switches.count("-table_ratio"))  { table_ratio = atof(switches["-table_ratio"].c_str()); }
@@ -355,7 +402,7 @@ void print_switches() {
     printf("  -ntables n               -- Number of tables\n");
     printf("  -table_knn k             -- Number of k-nearest neighbors for table\n");
     printf("  -run_dt b                -- Whether to run distance transform (0 or 1)\n");
-    printf("  -dt_algo raster|prop|brute|kdtree|downsample|hybrid -- Distance transform algorithm\n");
+    printf("  -dt_algo raster|prop|brute|kdtree|downsample|hybrid|euclidean -- Distance transform algorithm\n");
     printf("  -dt_iters n              -- Max number of dt iterations (-1 unlimits, default is unlimited)\n");
     printf("  -randomize_dt b          -- Randomize element selected by distance transform (0 or 1)\n");
     printf("  -parallel_dt b           -- Whether to parallelize distance transform (0 or 1)\n");
@@ -373,7 +420,30 @@ void print_switches() {
     printf("  -sanitize_input b        -- Sanitize input for prev_nnf (clamps coords to avoid crashes, 0 or 1)\n");
     printf("  -do_table_lookup b       -- Do lookup in table (0 or 1, default 1)\n");
     printf("  -init_random b           -- Initialize with random NNF (0 or 1, default 0)\n");
+    printf("  -prop_iters n            -- Number of query iterations (run propagate/k-coherence algorithm)\n");
+    printf("  -triangle_factor f       -- Early termination threshold for triangle inequality (tau**2)\n");
     printf("\n");
+#if TABLE_CLUSTER_KMEANS
+    printf("  -cluster_kmeans b        -- Use k-means clustering at coarse level and table at fine level\n");
+    printf("  -cluster_count n         -- Cluster count for k-means\n");
+    printf("  -cluster_limit n         -- Limit number of grid cells within each cluster to n million\n");
+    printf("\n");
+#endif
+#if TABLE_PRODUCT_QUANTIZE
+    printf("  -product_quantize b      -- Use product quantization\n");
+    printf("  -product_quantize_log b  -- Log product quantization debugging information to files\n");
+    printf("  -product_quantize_dims n -- Dimension count for each subspace of product quantization\n");
+    printf("  -product_quantize_mapn n -- Slices per dimension for product quantization mapping\n");
+    printf("  -product_quantize_knn n  -- knn for product quantization distance transform\n");
+    printf("  -product_quantize_dt_all b\n");
+    printf("\n");
+#endif
+#if (TABLE_CLUSTER_KMEANS||TABLE_PRODUCT_QUANTIZE)
+    printf("  -kmeans_attempts n\n");
+    printf("  -kmeans_max_iters n\n");
+    printf("  -kmeans_eps f\n");
+    printf("\n");
+#endif
     printf("  -treecann_agrid n\n");
     printf("  -treecann_bgrid n\n");
     printf("  -treecann_eps e\n");

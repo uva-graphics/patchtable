@@ -21,7 +21,8 @@ def main():
     L = []
     for ndims in dim_list:
         for nchroma in [1]: #, 3]:
-            for limit in [1.0, 10.0, 100.0]:
+#            for limit in [1.0, 10.0, 100.0]:
+            for limit in [100.0]:
                 for kcoherence in [0, 1, 2, 3, 4, 5, 10, 20]:                       # Was [..., 20]
                     for prop_iters in [1, 2, 3]:                                    # Was [1, 2]
                         for spatial in [0, 1]:                                      # Was [0, 1, 2]
@@ -31,7 +32,8 @@ def main():
                                         for dt_iters in [-1]: #[-1, 1]:
                                             for query_step in [1, 2, 3, 4, 5, 6, 10]: #, 2]:
                                                 for kcoherence_iter in [-1]:        # Was [-1, 0]:
-                                                    for ntables in range(1, 7):     # Was range(1, 7):
+#                                                    for ntables in range(1, 7):     # Was range(1, 7):
+                                                    for ntables in [1]:
                                                         for triangle_factor in [1.0, 1.5, 2.0, 4.0]:    # Was not searched previously
 #                                            for treecann in [0, 1]:
 #                                                treecann_paramL = [(0,0)] if not treecann else [(x, y) for x in range(1,11,2) for y in range(1,11,2)]

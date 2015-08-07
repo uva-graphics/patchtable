@@ -485,40 +485,52 @@ class Array {
     }
     
     TEMPLATE_OTHER_ARRAY
-    void assign(const OTHER_ARRAY &other) {
-        resize(other.sizes);
+    void assign(const OTHER_ARRAY &other, bool dealloc=true) {
+        if (dealloc) {
+            resize(other.sizes);
 #if !VISUAL_STUDIO_WORKAROUND
-        if (downsample_dim0 == T_downsample_dim0 && downsample_dim1 == T_downsample_dim1 && downsample_dim2 == T_downsample_dim2) {
+            if (downsample_dim0 == T_downsample_dim0 && downsample_dim1 == T_downsample_dim1 && downsample_dim2 == T_downsample_dim2) {
 #endif
-            for (int i = 0; i < nelems; i++) {
-                data[i] = cast_types<T, real>(other.data[i]);
-            }
+                for (int i = 0; i < nelems; i++) {
+                    data[i] = cast_types<T, real>(other.data[i]);
+                }
 #if !VISUAL_STUDIO_WORKAROUND
-        } else {
-            int dims = dimensions();
-            if (dims == 1) {
-                for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
-                    get_nearest(v0) = other(v0);
-                }
-            } else if (dims == 2) {
-                for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
-                    for (int v1 = 0; v1 < sizes[1]; v1 += downsample_dim1) {
-                        get_nearest(v0, v1) = other(v0, v1);
+            } else {
+                int dims = dimensions();
+                if (dims == 1) {
+                    for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
+                        get_nearest(v0) = other(v0);
                     }
-                }
-            } else if (dims == 3) {
-                for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
-                    for (int v1 = 0; v1 < sizes[1]; v1 += downsample_dim1) {
-                        for (int v2 = 0; v2 < sizes[2]; v2 += downsample_dim2) {
-                            get_nearest(v0, v1, v2) = other(v0, v1, v2);
+                } else if (dims == 2) {
+                    for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
+                        for (int v1 = 0; v1 < sizes[1]; v1 += downsample_dim1) {
+                            get_nearest(v0, v1) = other(v0, v1);
                         }
                     }
+                } else if (dims == 3) {
+                    for (int v0 = 0; v0 < sizes[0]; v0 += downsample_dim0) {
+                        for (int v1 = 0; v1 < sizes[1]; v1 += downsample_dim1) {
+                            for (int v2 = 0; v2 < sizes[2]; v2 += downsample_dim2) {
+                                get_nearest(v0, v1, v2) = other(v0, v1, v2);
+                            }
+                        }
+                    }
+                } else {
+                    ASSERT2(false, "dims > 3 not implemented");
                 }
-            } else {
-                ASSERT2(false, "dims > 3 not implemented");
             }
-        }
 #endif
+        } else {
+            if (typeid(*this) != typeid(other)) {
+                fprintf(stderr, "expected assign(other, dealloc=false) to have matching types, types are %s, %s\n", typeid(*this).name(), typeid(other).name());
+                ASSERT2(false, "mismatched types");
+            }
+            data = (real *) other.data;
+            sizes = other.sizes;
+            sizes_downsampled = other.sizes_downsampled;
+            stride = other.stride;
+            nelems = other.nelems;
+        }
     }
 
     Array &operator=(const Array &other) {
@@ -549,6 +561,10 @@ class Array {
     
     Array(const Array<real> &other) :data(NULL), dealloc(true) {
         assign(other);
+    }
+    
+    Array(const Array<real> &other, bool dealloc_) :data(NULL), dealloc(dealloc_) {
+        assign(other, dealloc);
     }
     
     INLINE int size() const {
@@ -3274,6 +3290,12 @@ template<class real>
 Array<real> imdownsample(const Array<real> &A, double factor) {
     return imresize(A, int(A.width()*factor+0.5), int(A.height()*factor+0.5));
 }
+
+//float median(vector<float> vec) {
+//    sort(vec.begin(), vec.end());
+//    int median_index = vec.size()/2;
+//    return vec[median_index];
+//}
 
 #endif
 
