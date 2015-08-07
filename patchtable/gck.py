@@ -370,7 +370,7 @@ template<class in_type, class out_type, int n, int nchroma> void gck_%(patch_w)d
         for (i, (row, col)) in enumerate(orderL):
             current_V = numpy.asarray(wh_L[col])
             current_H = numpy.asarray(wh_L[row])
-            numpy.savetxt('gck_%d_%03d.txt'%(patch_w, i+1), numpy.outer(current_H, current_V), '%2d')
+#            numpy.savetxt('gck_%d_%03d.txt'%(patch_w, i+1), numpy.outer(current_H, current_V), '%2d')
             if i == 0:
                 continue
             horiz = orderL[i][COL] != orderL[i-1][COL]
