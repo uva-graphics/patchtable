@@ -7,11 +7,12 @@
 #include <stdio.h>      /* printf */
 #include <assert.h>     /* assert */
 #include<stdlib.h>
+#include "cassert"
 #include "time.h"
-#include "patchtable.h"
+//#include "patchtable.h"
 using namespace cv;
 #include <opencv2/imgproc/imgproc.hpp>
-int PCADIMS = 10;
+int PCADIMS = 15;
 using namespace std;
 string TRAINFILENAME;
 vector<string> TESTFILENAME;
@@ -30,8 +31,8 @@ int TrainImgRowsize = 0;
 #define assert2(expr, msg) ASSERT2(expr, msg)
 string TEST = "images\\";
 //#define DrawResult 1
-//#define BigPicture 1
-#define Patchtable 1
+#define BigPicture 1
+//#define Patchtable 1
 #define SmallPicture 1
 void WriteFile(int rows, int cols, float **data, string NAME){
 	float x_min = 500.0, x_max = -500.0;
@@ -281,7 +282,7 @@ void write_results(const char* filename, T **data, int rows, int cols)
 		for (int j = 0; j < cols; ++j) {
 			if (typeid(T).name() == typeid(1.0f).name())
 			{
-				out << data[i][j] << endl;
+				out << data[i][j] << " ";//<< endl;
 			}
 			else if (typeid(T).name() == typeid(1).name())
 			{
@@ -292,6 +293,7 @@ void write_results(const char* filename, T **data, int rows, int cols)
 				assert2(typeid(T).name() == typeid(1.0f).name() || typeid(T).name() == typeid(1).name(), "expected int or float");
 			}
 		}
+		out << endl;
 	}
 	out.close();
 }
@@ -324,6 +326,7 @@ void GeneraTrainSet()
 	KeyRows = (TrainImgColsize - TrainImgHRSize + 1)*(TrainImgRowsize - TrainImgHRSize + 1);//highres patch number
 #ifdef BigPicture
 	Mat randomKey(10000, vectorSize, CV_32FC1);
+	
 	//imwrite("TrainImg.png", TrainLum*255.0);
 	/*Adapt to big data*/
 	RNG rng;
@@ -421,7 +424,7 @@ float Average(Mat& input)
 void SuperRe()
 {
 	int nn = 9;
-	int** result;
+	//int** result;
 	int testNo = TESTFILENAME.size();
 	ResultImg = new  Mat[testNo];
 	int index = 0, resultIndex = 0;
@@ -437,7 +440,7 @@ void SuperRe()
 		);
 	finish = clock();
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;
-	cout << duration << ".seconds"<<endl;
+	cout << duration << ".seconds" << endl;
 	vector<int> indices(nn);
 	vector<float> dists(nn);
 #endif
@@ -450,11 +453,11 @@ void SuperRe()
 		int lowRows = TestLum[itestNo].rows;
 		int lowCols = TestLum[itestNo].cols;
 		int tcount = (lowRows - TrainImgLRSize + 1)*(lowCols - TrainImgLRSize + 1);
-		result = new int*[tcount];
+		/*result = new int*[tcount];
 		for (int n = 0; n < tcount; n++)
 		{
-			result[n] = new int[nn];
-		}
+		result[n] = new int[nn];
+		}*/
 		Mat filter1mat = Mat::zeros(lowRows, lowCols, CV_32FC1);
 		Mat filter2mat = Mat::zeros(lowRows, lowCols, CV_32FC1);
 		Mat filter3mat = Mat::zeros(lowRows, lowCols, CV_32FC1);
@@ -683,7 +686,7 @@ void SuperRe()
 			}
 		}
 #ifndef Patchtable
-		cout<<"search time:"<<duration<<".seconds";
+		cout << "search time:" << duration << ".seconds";
 #else
 		//dealwith TrainFeatureData
 
@@ -698,7 +701,7 @@ void SuperRe()
 			{
 				for (int k = 0; k < PCADIMS; k++)
 				{
-					TrainVectorArray(r, c, k) = TrainFeatureData.at<float>(count,k);
+					TrainVectorArray(r, c, k) = TrainFeatureData.at<float>(count, k);
 				}
 				count++;
 			}
@@ -735,7 +738,7 @@ void SuperRe()
 
 		PatchTable<>* table = new PatchTable<>(p, TrainVectorArray);
 		Array<double> ann;
-		
+
 		double latest_time = 1e100;
 		for (int iter = 0; iter < 2; iter++){
 			latest_time = table->lookup(TestVectorArray, ann);
@@ -744,7 +747,55 @@ void SuperRe()
 #endif
 		//ReaDate(KeyRows, vectorSize, testset, "testset.txt");
 		//ReaDate(tcount, nn, result, "result.txt");
-		Mat weightResult = Mat::zeros(lowRows*DownSampleFactor, lowCols*DownSampleFactor, CV_32SC1);
+		/********************Compute Weight***/
+		float *x = new  float[TrainImgHRSize];
+		float *y = new  float[TrainImgHRSize];
+		for (int i = 0; i < TrainImgHRSize; i++)
+		{
+			if (i < 9)
+			{
+				x[i] = 0.1 + 0.1*i;
+			}
+			else if (i > TrainImgHRSize - 10)
+			{
+				x[i] = 0.9 - 0.1*(9 - (TrainImgHRSize - i));
+			}
+			else
+			{
+				x[i] = 1.0;
+			}
+		}
+		for (int i = 0; i < TrainImgHRSize; i++)
+		{
+			if (i < 9)
+			{
+				y[i] = 0.1 + 0.1*i;
+			}
+			else if (i > TrainImgHRSize - 10)
+			{
+				y[i] = 0.9 - 0.1*(9 - (TrainImgHRSize - i));
+			}
+			else
+			{
+				y[i] = 1.0;
+			}
+		}
+		Mat tempHighPatchWeight = Mat::zeros(TrainImgHRSize, TrainImgHRSize, CV_32FC1);
+		float **result = new float*[TrainImgHRSize];
+		for (int n = 0; n < TrainImgHRSize; n++)
+		{
+			result[n] = new float[TrainImgHRSize];
+		}
+		for (int i = 0; i < TrainImgHRSize; i++)
+		{
+			for (int j = 0; j < TrainImgHRSize; j++)
+			{
+				tempHighPatchWeight.at<float>(i, j) = x[i] * y[j];
+				result[i][j] = tempHighPatchWeight.at<float>(i, j);
+			}
+		}
+		write_results("weight.txt", result, TrainImgHRSize, TrainImgHRSize);
+		Mat weightResult = Mat::zeros(lowRows*DownSampleFactor, lowCols*DownSampleFactor, CV_32FC1);
 		Mat Result = Mat::zeros(lowRows*DownSampleFactor, lowCols*DownSampleFactor, CV_32FC1);
 		int r = 0, c = 0, tempR = 0, tempC = 0; float sumweight = 0.0; int index[9];
 		Mat resultFindHighPatch = Mat::zeros(TrainImgHRSize * 50, TrainImgHRSize*(nn), CV_32FC1);
@@ -874,8 +925,8 @@ void SuperRe()
 				{
 					for (int j = 0; j < TrainImgHRSize; j++)
 					{
-						Result.at<float>(i + startIndexR, j + startIndexC) = tempHighPatchSum.at<float>(i, j) + Result.at<float>(i + startIndexR, j + startIndexC);
-						weightResult.at<int>(i + startIndexR, j + startIndexC) = 1 + weightResult.at<int>(i + startIndexR, j + startIndexC);
+						Result.at<float>(i + startIndexR, j + startIndexC) = tempHighPatchSum.at<float>(i, j)*tempHighPatchWeight.at<float>(i, j) + Result.at<float>(i + startIndexR, j + startIndexC);
+						weightResult.at<float>(i + startIndexR, j + startIndexC) = 1 + weightResult.at<float>(i + startIndexR, j + startIndexC);
 					}
 				}
 			}
@@ -884,10 +935,13 @@ void SuperRe()
 		{
 			for (int j = 0; j < Result.cols; j++)
 			{
-				Result.at<float>(i, j) = Result.at<float>(i, j) / weightResult.at<int>(i, j);
+				Result.at<float>(i, j) = Result.at<float>(i, j) / weightResult.at<float>(i, j);
 			}
 		}
-		imwrite(TEST + "addOriginalResult.png", Result*255.0);
+		char file_name[50];
+		sprintf(file_name, "addOriginalResult%d.png", PCADIMS);
+		//imwrite(TEST + "addOriginalResult" + PCADIMS + ".png", Result*255.0);
+		imwrite(file_name, Result*255.0);
 		TestLum[itestNo] = Result;
 		Mat CR = Result.clone();
 		Mat CB = Result.clone();
@@ -904,19 +958,24 @@ void SuperRe()
 		merge(LumYcYb, ResultImg[itestNo]);
 		cvtColor(ResultImg[itestNo], ResultImg[itestNo], COLOR_YCrCb2BGR);
 		ResultImg[itestNo] = ResultImg[itestNo] * 255.0;
-		imwrite(TEST + "addfinalResult.jpg", ResultImg[itestNo]);
-		for (int m = 0; m < tcount; m++)
+		//imwrite(TEST + "addfinalResult.png", ResultImg[itestNo]);
+		sprintf(file_name, "addfinalResult%d.png", PCADIMS);
+		imwrite(file_name, ResultImg[itestNo]);
+		/*for (int m = 0; m < tcount; m++)
 		{
-			delete[] result[m];
+		delete[] result[m];
 		}
-		delete[] result;
+		delete[] result;*/
+		LumYcYb.clear();
+
 	}
-	delete[]TestLum;
-	delete[]ResultImg;
-	delete[]TestImg;
-	delete[]TestCB;
-	delete[]TestCR;
-//	Sleep(5000);
+	delete pca;
+	//delete[]TestLum;
+	//delete[]ResultImg;
+	//delete[]TestImg;
+	//delete[]TestCB;
+	//delete[]TestCR;
+	//	Sleep(5000);
 }
 void usage()
 {
@@ -1080,11 +1139,9 @@ int main(int argc0, char **argv0) {
 	{
 		assert2(argv[0] == "Superes", "expected only Superes mode");
 	}
-
-	//Test2();
-	//Test1();
 	GeneraTrainSet();
 	SuperRe();
+
 	waitKey(0);
 	return 0;
 }

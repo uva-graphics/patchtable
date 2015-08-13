@@ -35,7 +35,10 @@
     <ClCompile Include="..\..\..\..\solver\util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\solver\params.cpp">
+    <ClCompile Include="..\..\..\analogy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\patchtable_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 This is the source code for the project [PatchTable](http://www.connellybarnes.com/work/project_pages/patchtable/), presented at ACM SIGGRAPH 2015. PatchTable speeds up patch queries by making a precomputed index data structure. The precomputation is assumed to be an offline process that can take seconds to minutes.
 
-Currently this code runs on Mac. It also can build on Windows. We hope to release Windows project files in a few days.
+Currently this code runs on Mac and Windows. 
 
 License
 -------
@@ -26,6 +26,7 @@ The dependency libraries should be installed:
  * OpenCV
  * FLANN
  * ANN
+ * Boost
 
 Build Command-line
 ------------------
@@ -34,6 +35,12 @@ PatchTable can be built on Mac OS 10.10:
 
     cd patchtable/proj
     make -j                           % Parallel build
+
+PatchTable can be built on Windows 7 64-bit Operating System with Visual Studio 2013:
+
+ * The user needs to change project property->Configuration Properties->VC++ Directories to point to their own directory and add the dependency libraries.
+ * The `patchtable.exe` binary will be created in a directory such as `patchtable\patchtable\VSproj\ConsoleApplication1\x64\Release\`.
+
 
 Command-line Usage
 ------------------
@@ -81,5 +88,8 @@ For more detailed usage of PatchTable, see the `test_match` function in `patchta
 GUI (Windows)
 -------------
 
-The Windows GUI for image editing and stitching is in `patchtable_apps/ImgCollection/Patch`.
+The Windows GUI code for image editing and stitching is in `patchtable_apps/ImgCollection/Superes`.
 
+The Light field super-resolution code is in `patchtable_apps/HybridSuperres/Superes`. The input file lists are `HybridSuperres/Superes/Highresolution.txt` and `lowresolutionFile.txt`. These contain the locations for the high and low resolution PNG files for each of the camera views.
+When the program runs sucessfully, it will create a folder named result in `HybridSuperres/Superes/`
+All the parameters are set in the code which are used to produce the same reference images in our paper. 
